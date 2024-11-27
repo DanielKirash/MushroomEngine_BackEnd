@@ -23,7 +23,6 @@ class Macchinari(BaseModel):
 class Impianti(BaseModel):
     #Classe per la rappresentazione di un impianto
     name: str
-    name: str
     location: str
     description: str
     machinery: List[Macchinari] = []

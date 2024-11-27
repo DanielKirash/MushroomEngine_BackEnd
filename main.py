@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from handlers.handler import router
 from handlers.impianti_handler import router_impianti
+from handlers.macchinari_handler import router_macchinari
 
 app = FastAPI(
 
@@ -13,3 +14,4 @@ app = FastAPI(
 
 app.include_router(router)
 app.include_router(router_impianti)
+app.include_router(router_macchinari)
