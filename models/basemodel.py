@@ -25,4 +25,4 @@ class Impianti(BaseModel):
     name: str
     location: str
     description: str
-    machinery: List[Macchinari] = []
+    # machinery: List[Macchinari] = []
