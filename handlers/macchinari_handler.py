@@ -29,9 +29,11 @@ async def get_macchinari():
 async def create_macchinari(id_impianto: str, macchinario: Macchinari):
     macchinario.plant_id = id_impianto
     response = machinery_collection.insert_one(macchinario.model_dump())
+    macchinario_dict = macchinario.model_dump()
+    macchinario_dict["_id"] = toString(response.inserted_id)
     plants_collection.update_one({"_id": ObjectId(id_impianto)},
-                                 {"$push": {"macchinari": str(response.inserted_id)}})
-    return {"_id": toString(response.inserted_id)}
+                                 {"$push": {"macchinari": macchinario_dict}})
+    return macchinario_dict
 
 @router_macchinari.delete("/macchinari/{id}")
 async def delete_macchinario(id_macchinario: str):
