@@ -27,3 +27,13 @@ async def get_impianto(id_impianto: str):
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, 
                         detail={"message": "Id non trovato"})
+    
+@router_impianti.delete("/impianti/{id}")
+async def delete_impianto(id_impianto: str):
+    da_eliminare = plants_collection.find_one({"_id": ObjectId(id_impianto)})
+    if da_eliminare:
+        plants_collection.delete_one({"_id": ObjectId(id_impianto)})
+        return {"message": "Eliminato con successo"}
+    else:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail={"message": "Id non trovato"})
