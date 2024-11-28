@@ -39,9 +39,9 @@ async def delete_impianto(id_impianto: str):
                             detail={"message": "Id non trovato"})
 
 @router_impianti.put("/impianti/{id}")
-async def update_impianto(id_impianto: str, impianto: Impianti):
+async def update_impianto(id: str, impianto: Impianti):
     # Trova l'impianto da aggiornare
-    existing_impianto = plants_collection.find_one({"_id": ObjectId(id_impianto)})
+    existing_impianto = plants_collection.find_one({"_id": ObjectId(id)})
     
     if not existing_impianto:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
@@ -49,9 +49,9 @@ async def update_impianto(id_impianto: str, impianto: Impianti):
 
     updated_data = impianto.model_dump()
 
-    plants_collection.update_one({"_id": ObjectId(id_impianto)},
+    plants_collection.update_one({"_id": ObjectId(id)},
                                  {"$set": updated_data})
-    updated_impianto = plants_collection.find_one({"_id": ObjectId(id_impianto)})
+    updated_impianto = plants_collection.find_one({"_id": ObjectId(id)})
     updated_impianto["_id"] = toString(updated_impianto["_id"])
     
     return updated_impianto
