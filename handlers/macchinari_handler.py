@@ -46,3 +46,21 @@ async def delete_macchinario(id_macchinario: str):
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail={"message": "Id non trovato"})
+    
+@router_macchinari.put("/machinery/{machinery_id}")
+async def update_macchinario(id_macchinario: str, macchinario: Macchinari):
+    # Trova il macchinario da aggiornare
+    existing_macchinario = machinery_collection.find_one({"_id": ObjectId(id_macchinario)})
+    
+    if not existing_macchinario:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail={"message": "Id non trovato"})
+    updated_data = macchinario.model_dump()
+
+    machinery_collection.update_one({"_id": ObjectId(id_macchinario)},
+                                    {"$set": updated_data})
+
+    updated_macchinario = machinery_collection.find_one({"_id": ObjectId(id_macchinario)})
+    updated_macchinario["_id"] = toString(updated_macchinario["_id"])
+    
+    return updated_macchinario
