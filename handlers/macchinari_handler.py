@@ -29,9 +29,11 @@ async def get_macchinari():
 async def create_macchinari(id_impianto: str, macchinario: Macchinari):
     macchinario.plant_id = id_impianto
     response = machinery_collection.insert_one(macchinario.model_dump())
+    macchinario_dict = macchinario.model_dump()
+    macchinario_dict["_id"] = toString(response.inserted_id)
     plants_collection.update_one({"_id": ObjectId(id_impianto)},
-                                 {"$push": {"macchinari": str(response.inserted_id)}})
-    return {"_id": toString(response.inserted_id)}
+                                 {"$push": {"macchinari": macchinario_dict}})
+    return macchinario_dict
 
 @router_macchinari.delete("/macchinari/{id}")
 async def delete_macchinario(id_macchinario: str):
@@ -44,3 +46,21 @@ async def delete_macchinario(id_macchinario: str):
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail={"message": "Id non trovato"})
+    
+@router_macchinari.put("/machinery/{machinery_id}")
+async def update_macchinario(id_macchinario: str, macchinario: Macchinari):
+    # Trova il macchinario da aggiornare
+    existing_macchinario = machinery_collection.find_one({"_id": ObjectId(id_macchinario)})
+    
+    if not existing_macchinario:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail={"message": "Id non trovato"})
+    updated_data = macchinario.model_dump()
+
+    machinery_collection.update_one({"_id": ObjectId(id_macchinario)},
+                                    {"$set": updated_data})
+
+    updated_macchinario = machinery_collection.find_one({"_id": ObjectId(id_macchinario)})
+    updated_macchinario["_id"] = toString(updated_macchinario["_id"])
+    
+    return updated_macchinario
