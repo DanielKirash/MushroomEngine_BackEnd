@@ -37,9 +37,9 @@ async def create_macchinari(id: str, macchinario: Macchinari):
 async def delete_macchinario(id: str):
     da_eliminare = machinery_collection.find_one({"_id": ObjectId(id)})
     if da_eliminare:
+        plant_id = da_eliminare["plant_id"]
         machinery_collection.delete_one({"_id": ObjectId(id)})
-        id = da_eliminare["plant_id"]
-        plants_collection.update_one({"_id": ObjectId(id)},
+        plants_collection.update_one({"_id": ObjectId(plant_id)},
                                      {"$pull": {"macchinari": str(id)}})
     else:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
