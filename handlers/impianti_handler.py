@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from models.basemodel import Impianti
-from utils.utils import plants_collection
+from utils.utils import plants_collection, machinery_collection
 from utils.utils import toString
 from bson.objectid import ObjectId
 
@@ -55,3 +55,14 @@ async def update_impianto(id: str, impianto: Impianti):
     updated_impianto["_id"] = toString(updated_impianto["_id"])
     
     return updated_impianto
+
+@router_impianti.get("/impianti_con_macchinari")
+async def get_impianti_con_macchinari():
+    impianti = list(plants_collection.find())
+    for impianto in impianti:
+        impianto["_id"] = toString(impianto["_id"])
+        macchinari = list(machinery_collection.find({"plant_id": impianto["_id"]}))
+        for macchinario in macchinari:
+            macchinario["_id"] = toString(macchinario["_id"])
+        impianto["macchinari"] = macchinari
+    return impianti
